@@ -56,3 +56,29 @@ class finance_utility:
             price_df[col] =  pd.Series(array, index=returns.index)
             
         return price_df
+    @staticmethod        
+    def get_kpi(returns_df,kpis=['mdd','var','cagr','std']):
+        df = pd.DataFrame()
+        prices_df = finance_utility.return_to_price(returns_df)
+        for name in prices_df.columns:
+            prices = prices_df[name]
+            ret = returns_df[name]
+            result_dict = {
+                'name' :name
+            }
+            if 'mdd' in kpis:
+                mdd =finance_utility.drawdown(prices)
+                result_dict['mdd']=-mdd*100
+            if 'var' in kpis:
+                dd = prices.rolling(126).apply(func=finance_utility.drawdown,raw=False)
+                var = dd.quantile(0.05)            
+                result_dict['var']= -var*100
+            if 'std' in kpis:
+                std = ret.std()
+                result_dict['std']=std*100*math.sqrt(252)
+            if 'cagr' in kpis:
+                trade_days = (prices.index[-1] - prices.index[0]).days
+                cagr = finance_utility.cagr(prices[0],prices[-1],trade_days)
+                result_dict['cagr']=cagr   
+            df = df.append(result_dict, ignore_index=True)
+        return df
