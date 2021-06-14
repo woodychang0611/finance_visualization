@@ -10,40 +10,27 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation,PillowWriter
 from datetime import timedelta
 
-obs_period = 126
-
-
 indices_df = pd.read_csv('data/indices.csv', parse_dates=True, index_col=0)
-returns_df = pd.read_csv('data/constant_portfolio_return.csv', parse_dates=True, index_col=0)
+kpi_df = pd.read_csv('data/kpis.csv', parse_dates=True)
 set_matplotlib_style('slide')
+
 fig, ax = plt.subplots(nrows=2, ncols=1,figsize=(12,12), gridspec_kw={'height_ratios': [3, 1]})
 performance_ax = ax[0]
 indices_ax = ax[1]
-dates = indices_df.index
+dates = kpi_df['date'].unique()
+scatters={}
+#for t, d in kpi_df.groupby('type'):
+#    count = len(d['name'].unique())   
+#    scatters[t]=performance_ax.scatter(np.zeros(count),np.zeros(count),label=t)
+
 color = 'yellow'
+
 l = indices_ax.axvline(x=dates[0], c=color)
-data = (  
-    ('Single ETF', './data/etf_returns.csv'),    
-    ('Monkey Portfolios', './data/random_portfolio_return.csv'),        
-    ('CRP', './data/constant_portfolio_return.csv'),
-    ('CRP with leverage', './data/l2_constant_portfolio_return.csv'),  
-)
-
-returns_dfs = []
-scatters=[]
-for type,src in data:
-    df = pd.read_csv(src, parse_dates=True, index_col=0)
-    df['type']=type
-    returns_dfs.append(df)
-    count = len(df.columns)
-    scatter= performance_ax.scatter(np.zeros(count),np.zeros(count),label=type)
-    scatters.append(scatter)
-
 def init():
     print('test')
     color = 'cyan'
     indices_ax.plot(indices_df.index, indices_df["S&P 500"],color=color)
-
+    #indices_ax.set_xlim(dates[0], dates[-1])
     color = 'lime'
     vix_ax = indices_ax.twinx()
     vix_ax.tick_params(axis='y', labelcolor=color)
@@ -54,10 +41,17 @@ def init():
     return l,
 
 def update(frame):
-    ed = frame    
-    sd = ed - timedelta(days=(obs_period-1))
+    ed = frame
     print(ed)
-    l.set_data([[frame,frame],[0,1]])
+    l.set_data([[ed,ed],[0,1]])
+    return l,
+    df = kpi_df[kpi_df['date']==ed]
+
+    for t, d in df.groupby('type'):
+        offsets = d[['std','cagr']].to_numpy()
+        scatters[t].set_offsets(offsets)
+
+    return l,
     for df, scatter in zip(returns_dfs,scatters):
         count = len(df.columns)
         if (sd < df.index[0]):
@@ -71,8 +65,7 @@ def update(frame):
 
     return l,
 
-ani = FuncAnimation(fig=fig, func=update, frames=dates, init_func=init, blit=True)
-#plt.show()
+ani = FuncAnimation(fig=fig, func=update, frames=dates[:10], init_func=init, blit=True)
 f = r"./test.gif" 
 writergif = PillowWriter(fps=30) 
 ani.save(f, writer=writergif)
