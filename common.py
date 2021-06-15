@@ -3,7 +3,7 @@ from cycler import cycler
 
 def set_matplotlib_style(mode=None):
     matplotlib.rcParams.update(matplotlib.rcParamsDefault)
-    matplotlib.rcParams.update({'font.size': 15})
+    matplotlib.rcParams.update({'font.size': 12})
     matplotlib.rcParams['lines.linewidth'] = 2
     #matplotlib.rcParams["text.usetex"] = True
 

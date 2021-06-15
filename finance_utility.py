@@ -79,6 +79,6 @@ class finance_utility:
             if 'cagr' in kpis:
                 trade_days = (prices.index[-1] - prices.index[0]).days
                 cagr = finance_utility.cagr(prices[0],prices[-1],trade_days)
-                result_dict['cagr']=cagr   
+                result_dict['cagr']=cagr*100
             df = df.append(result_dict, ignore_index=True)
         return df
