@@ -1,9 +1,6 @@
 from os import replace
-from numpy.core.fromnumeric import shape, var
-from finance_utility import finance_utility
 import numpy as np
 import pandas as pd
-import math
 from common import set_matplotlib_style
 import numpy as np
 import matplotlib.pyplot as plt
@@ -66,7 +63,7 @@ cmap = colors.ListedColormap(list((d['color'] for d in matplotlib.rcParams['axes
 bounds=range(0,len(types)+1)
 norm = colors.BoundaryNorm(bounds, len(types))
 
-if (True):
+if (False):
     plt.close()
     data = None
     for date in dates[:]:
