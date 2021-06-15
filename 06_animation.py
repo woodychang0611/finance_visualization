@@ -13,6 +13,7 @@ obs_period = 126 #6 months working days
 single_type_count = 100
 risk_free_cagr =1  
 indices_df = pd.read_csv('data/indices.csv', parse_dates=True, index_col=0)
+#unzip kpis.csv.zip if needed
 kpi_df = pd.read_csv('data/kpis.csv', parse_dates=['date'])
 kpi_df['sharpe']=(kpi_df['cagr']-risk_free_cagr)/kpi_df['std']
 
