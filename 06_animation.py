@@ -18,7 +18,7 @@ kpi_df = pd.read_csv('data/kpis.csv', parse_dates=['date'])
 kpi_df['sharpe']=(kpi_df['cagr']-risk_free_cagr)/kpi_df['std']
 
 
-df = next(iter(kpi_df.groupby('date')))[1]
+#df = next(iter(kpi_df.groupby('date')))[1]
 
 
 set_matplotlib_style('slide')
@@ -63,29 +63,6 @@ cmap = itertools.islice(matplotlib.rcParams['axes.prop_cycle'], len(types))
 cmap = colors.ListedColormap(list((d['color'] for d in matplotlib.rcParams['axes.prop_cycle'])))
 bounds=range(0,len(types)+1)
 norm = colors.BoundaryNorm(bounds, len(types))
-
-if (False):
-    plt.close()
-    data = None
-    for date in dates[:]:
-        df = kpi_df[kpi_df['date']==date].groupby('type').sample(n=single_type_count,random_state=1)
-        types = df.sort_values('sharpe')['type']
-        d = np.array(((list(type_values[t] for t in types)),)).transpose()
-        if (data is None):
-            data = d.copy()
-        else:
-            data = np.concatenate((data,d),axis=1)
-    unique, counts = np.unique(data, return_counts=True)
-    print(dict(zip(unique, counts)))
-
-    fig, ax = plt.subplots(figsize=(20,20))
-
-    ax.imshow(data,aspect='auto',origin='lower',
-                                    cmap=cmap,norm=norm)
-    ax.axis('off')                                
-    #plt.show()
-    plt.savefig('sharpe.png')               
-    exit()
 cagr_graph =cagr_ax.imshow([np.zeros((portfolio_count,1))],aspect='auto',origin='lower',
                                 cmap=cmap,norm=norm)
 std_graph =std_ax.imshow([np.zeros((portfolio_count,1))],aspect='auto',origin='lower',
